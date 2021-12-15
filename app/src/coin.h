@@ -19,12 +19,12 @@
 extern "C" {
 #endif
 
-#define CLA                  0x94
+#define CLA                  0xa2
 
 #define HDPATH_LEN_DEFAULT   5
 #define HDPATH_0_DEFAULT     (0x80000000 | 0x2c)
-#define HDPATH_1_DEFAULT     (0x80000000 | 0x20b)
-#define HDPATH_1_RECOVERY    (0x80000000 | 0x162)
+#define HDPATH_1_DEFAULT     (0x80000000 | 0x333)
+#define HDPATH_1_RECOVERY    (0x80000000 | 0x162) // 354 - Polkadot
 
 #define SK_LEN_25519         64u
 #define SCALAR_LEN_ED25519   32u
@@ -51,7 +51,10 @@ typedef enum {
 
 #define COIN_AMOUNT_DECIMAL_PLACES          18
 
-#define COIN_GENESIS_HASH                   "0x0f89efd7bf650f2d521afef7456ed98dff138f54b5b7915cc9bce437ab728660"
+// MAINNET genesis: 
+#define COIN_GENESIS_HASH                   "0x7834781d38e4798d548e34ec947d19deea29df148a7bf32484b7b24dacf8d4b7"
+// TESTNET genesis
+//#define COIN_GENESIS_HASH                   "0x0f89efd7bf650f2d521afef7456ed98dff138f54b5b7915cc9bce437ab728660"
 #define COIN_NAME                           "Reef"
 #define COIN_TICKER                         "REEF"
 

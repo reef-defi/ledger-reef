@@ -76,15 +76,13 @@ ifeq ($(TARGET_NAME),TARGET_NANOX)
 DEFINES += SUBSTRATE_PARSER_FULL
 endif
 APPNAME = "Reef"
-APPPATH = "44'/523'"
-#APPPATH = "44'/819'" //uncomment when ledger-substrate-js is merged
+APPPATH = "44'/819'"
 
 else ifeq ($(COIN),REEF_XL)
 # XXL app configuration
 DEFINES += APP_STANDARD SUBSTRATE_PARSER_FULL
 APPNAME = "Reef XL"
-APPPATH = "44'/523'"
-#APPPATH = "44'/819'" //uncomment when ledger-substrate-js is merged
+APPPATH = "44'/819'"
 
 else
 define error_message
