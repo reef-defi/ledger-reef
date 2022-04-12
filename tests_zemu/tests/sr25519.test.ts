@@ -35,6 +35,10 @@ const defaultOptions = {
 
 jest.setTimeout(60000)
 
+beforeAll(async () => {
+  await Zemu.checkAndPullImage()
+})
+
 describe('SR25519', function () {
   test('get address sr25519', async function () {
     const sim = new Zemu(APP_PATH)
