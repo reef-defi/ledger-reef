@@ -64,6 +64,11 @@ void h_error_accept(unsigned int _) {
     app_reply_error();
 }
 
+void h_initialize(unsigned int _) {
+    view_idle_show(0, NULL);
+    UX_WAIT();
+}
+
 ///////////////////////////////////
 // Paging related
 

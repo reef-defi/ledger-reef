@@ -33,7 +33,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#if defined(TARGET_NANOX)
+ #if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
 
 void h_expert_toggle();
 void h_expert_update();
@@ -73,6 +73,14 @@ const ux_flow_step_t *const ux_idle_flow [] = {
   &ux_idle_flow_6_step,
   FLOW_END_STEP,
 };
+
+///////////
+UX_STEP_NOCB(ux_message_flow_1_step, pbb, { &C_icon_app, viewdata.key, viewdata.value,});
+
+UX_FLOW(
+    ux_message_flow,
+    &ux_message_flow_1_step
+);
 
 ///////////
 
@@ -242,6 +250,16 @@ void view_idle_show_impl(uint8_t item_idx, char *statusString) {
         ux_stack_push();
     }
     ux_flow_init(0, ux_idle_flow, NULL);
+}
+
+void view_message_impl(char *title, char *message) {
+    snprintf(viewdata.key, MAX_CHARS_PER_KEY_LINE, "%s", title);
+    snprintf(viewdata.value, MAX_CHARS_PER_VALUE1_LINE, "%s", message);
+    ux_layout_bnnn_paging_reset();
+    if(G_ux.stack_count == 0) {
+        ux_stack_push();
+    }
+    ux_flow_init(0, ux_message_flow, NULL);
 }
 
 void view_review_show_impl(){

@@ -41,7 +41,7 @@ extern void explicit_bzero(void *s, size_t n) __THROW __nonnull ((1));
 #include "bolos_target.h"
 #endif
 
-#if defined (TARGET_NANOS) || defined(TARGET_NANOX)
+#if defined (TARGET_NANOS) || defined(TARGET_NANOX) || defined(TARGET_NANOS2)
 #include "zxmacros_ledger.h"
 #else
 #include "zxmacros_x64.h"
@@ -88,7 +88,7 @@ void zemu_log_stack(const char *ctx);
 #if defined(ZEMU_LOGGING)
 __Z_INLINE void zemu_log(const char *buf)
 {
-    #if defined (TARGET_NANOS) || defined(TARGET_NANOX)
+    #if (defined (TARGET_NANOS) || defined(TARGET_NANOX) || defined(TARGET_NANOS2))
     asm volatile (
     "movs r0, #0x04\n"
     "movs r1, %0\n"
@@ -101,6 +101,12 @@ __Z_INLINE void zemu_log(const char *buf)
 __Z_INLINE void zemu_log(const char *unused){
     (void)unused;
 }
+#endif
+
+#if APP_TESTING
+#define ZEMU_LOGF(SIZE, ...) { char tmp[(SIZE)]; snprintf(tmp, (SIZE), __VA_ARGS__); zemu_log(tmp); }
+#else
+#define ZEMU_LOGF(SIZE, ...) {}
 #endif
 
 #ifdef __cplusplus

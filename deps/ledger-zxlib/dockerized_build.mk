@@ -27,6 +27,7 @@ DOCKER_APP_BIN=$(DOCKER_APP_SRC)/app/bin/app.elf
 
 DOCKER_BOLOS_SDKS=/project/deps/nanos-secure-sdk
 DOCKER_BOLOS_SDKX=/project/deps/nanox-secure-sdk
+DOCKER_BOLOS_SDKS2=/project/deps/nanosplus-secure-sdk
 
 # Note: This is not an SSH key, and being public represents no risk
 SCP_PUBKEY=049bc79d139c70c83a4b19e8922e5ee3e0080bb14a2e8b0752aa42cda90a1463f689b0fa68c1c0246845c2074787b649d0d8a6c0b97d4607065eee3057bdf16b83
@@ -78,10 +79,12 @@ all:
 	@$(MAKE) buildS
 	@$(MAKE) clean_build
 	@$(MAKE) buildX
+	@$(MAKE) clean_build
+	@$(MAKE) buildS2
 
 .PHONY: check_python
 check_python:
-	@python -c 'import sys; sys.exit(3-sys.version_info.major)' || (echo "The python command does not point to Python 3"; exit 1)
+	@python3 -c 'import sys; sys.exit(3-sys.version_info.major)' || (echo "The python command does not point to Python 3"; exit 1)
 
 .PHONY: deps
 deps: check_python
@@ -100,6 +103,10 @@ build_rustS:
 build_rustX:
 	$(call run_docker,$(DOCKER_BOLOS_SDKX),make -C $(DOCKER_APP_SRC) rust)
 
+.PHONY: build_rustS2
+build_rustS2:
+	$(call run_docker,$(DOCKER_BOLOS_SDKS2),make -C $(DOCKER_APP_SRC) rust)
+
 .PHONY: convert_icon
 convert_icon:
 	@convert $(LEDGER_SRC)/tmp.gif -monochrome -size 16x16 -depth 1 $(LEDGER_SRC)/nanos_icon.gif
@@ -112,6 +119,10 @@ buildS: build_rustS
 .PHONY: buildX
 buildX: build_rustX
 	$(call run_docker,$(DOCKER_BOLOS_SDKX),make -j $(NPROC) -C $(DOCKER_APP_SRC))
+
+.PHONY: buildS2
+buildS2: build_rustS2
+	$(call run_docker,$(DOCKER_BOLOS_SDKS2),make -j $(NPROC) -C $(DOCKER_APP_SRC))
 
 .PHONY: clean_output
 clean_output:
@@ -137,6 +148,10 @@ shellS:
 shellX:
 	$(call run_docker,$(DOCKER_BOLOS_SDKX) -t,bash)
 
+.PHONY: shellS2
+shellS2:
+	$(call run_docker,$(DOCKER_BOLOS_SDKS2) -t,bash)
+
 .PHONY: load
 load:
 	${LEDGER_SRC}/pkg/installer_s.sh load
@@ -153,6 +168,14 @@ loadX:
 deleteX:
 	${LEDGER_SRC}/pkg/installer_x.sh delete
 
+.PHONY: loadS2
+loadS2:
+	${LEDGER_SRC}/pkg/installer_s2.sh load
+
+.PHONY: deleteS2
+deleteS2:
+	${LEDGER_SRC}/pkg/installer_s2.sh delete
+
 .PHONY: show_info_recovery_mode
 show_info_recovery_mode:
 	@echo "This command requires a Ledger Nano S in recovery mode. To go into recovery mode, follow:"
@@ -165,36 +188,36 @@ show_info_recovery_mode:
 .PHONY: dev_init
 dev_init: show_info_recovery_mode
 	@echo "Initializing device with test mnemonic! WARNING TAKES 2 MINUTES AND REQUIRES RECOVERY MODE"
-	@python -m ledgerblue.hostOnboard --apdu --id 0 --prefix "" --passphrase "" --pin 5555 --words "equip will roof matter pink blind book anxiety banner elbow sun young"
+	@python3 -m ledgerblue.hostOnboard --apdu --id 0 --prefix "" --passphrase "" --pin 5555 --words "equip will roof matter pink blind book anxiety banner elbow sun young"
 
 # This target will initialize the device with the secondary integration testing mnemonic (Bob)
 .PHONY: dev_init_secondary
 dev_init_secondary: check_python show_info_recovery_mode
 	@echo "Initializing device with secondary test mnemonic! WARNING TAKES 2 MINUTES AND REQUIRES RECOVERY MODE"
-	@python -m ledgerblue.hostOnboard --apdu --id 0 --prefix "" --passphrase "" --pin 5555 --words "elite vote proof agree february step sibling sand grocery axis false cup"
+	@python3 -m ledgerblue.hostOnboard --apdu --id 0 --prefix "" --passphrase "" --pin 5555 --words "elite vote proof agree february step sibling sand grocery axis false cup"
 
 # This target will setup a custom developer certificate
 .PHONY: dev_ca
 dev_ca: check_python
-	@python -m ledgerblue.setupCustomCA --targetId 0x31100004 --public $(SCP_PUBKEY) --name zondax
+	@python3 -m ledgerblue.setupCustomCA --targetId 0x31100004 --public $(SCP_PUBKEY) --name zondax
 
 # This target will setup a custom developer certificate
 .PHONY: dev_caX
 dev_caX: check_python
-	@python -m ledgerblue.setupCustomCA --targetId 0x33000004 --public $(SCP_PUBKEY) --name zondax
+	@python3 -m ledgerblue.setupCustomCA --targetId 0x33000004 --public $(SCP_PUBKEY) --name zondax
 
 .PHONY: dev_ca_delete
 dev_ca_delete: check_python
-	@python -m ledgerblue.resetCustomCA --targetId 0x31100004
+	@python3 -m ledgerblue.resetCustomCA --targetId 0x31100004
 
 # This target will setup a custom developer certificate
 .PHONY: dev_ca2
 dev_ca2: check_python
-	@python -m ledgerblue.setupCustomCA --targetId 0x33000004 --public $(SCP_PUBKEY) --name zondax
+	@python3 -m ledgerblue.setupCustomCA --targetId 0x33000004 --public $(SCP_PUBKEY) --name zondax
 
 .PHONY: dev_ca_delete2
 dev_ca_delete2: check_python
-	@python -m ledgerblue.resetCustomCA --targetId 0x33000004
+	@python3 -m ledgerblue.resetCustomCA --targetId 0x33000004
 
 ########################## VUE Section ###############################
 
